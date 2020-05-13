@@ -62,6 +62,9 @@ async def screenshotr(url, output):
 
     screenshot_path = f"screenshots/{output}.png"
 
+    if not os.path.isdir("screenshots"):
+        os.mkdir("screenshots")
+
     await page.goto(url)
     await page.emulateMedia('screen')
     await page.screenshot({
