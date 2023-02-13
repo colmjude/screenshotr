@@ -7,6 +7,8 @@ import asyncio
 import pyppeteer
 from PIL import Image, ImageDraw, ImageFont
 
+# set this is be version I have installed
+pyppeteer.__chromium_revision__ = 1000090
 
 font_folder = "/Library/Fonts/"
 system_fonts_foler = "/System/Library/Fonts/"
@@ -62,11 +64,30 @@ async def screenshotr(url, output, fullPage=True):
     if not os.path.isdir("screenshots"):
         os.mkdir("screenshots")
 
-    await page.goto(url)
     # default setting
     # sets the page size for non fullpage screenshots
-    await page.setViewport({"width":1200,"height":1600})
+    await page.setViewport({"width":1200,"height":1600,"deviceScaleFactor":2.0})
+
+    vp = page.viewport
+    print(vp)
+    print('chromium version')
+    print(pyppeteer.__chromium_revision__)
     await page.emulateMedia('screen')
+
+    await page.goto(url)
+
+    await page.waitForSelector('img')
+    await page.waitFor(1000)
+    
+    dimensions = await page.evaluate('''() => {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight,
+            deviceScaleFactor: window.devicePixelRatio,
+            userAgent: window.navigator.userAgent
+        }
+    }''')
+    print(dimensions)
 
     opts = {
         'path': screenshot_path,
