@@ -1,8 +1,8 @@
-appdirs==1.4.4
-asyncio==3.4.3
-Pillow==7.1.2
-pyee==7.0.1
-pyppeteer==0.2.2
-tqdm==4.46.0
-urllib3==1.25.9
-websockets==8.1
+appdirs
+asyncio
+Pillow
+pyee
+pyppeteer
+tqdm
+urllib3
+websockets
