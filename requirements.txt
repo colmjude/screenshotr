@@ -1,5 +1,6 @@
 appdirs
 asyncio
+click
 Pillow
 pyee
 pyppeteer

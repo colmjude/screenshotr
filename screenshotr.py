@@ -6,6 +6,7 @@ import sys
 import asyncio
 import pyppeteer
 from PIL import Image, ImageDraw, ImageFont
+import click
 
 # set this is be version I have installed
 pyppeteer.__chromium_revision__ = 1000090
@@ -19,6 +20,10 @@ font_size = 19
 margin = 15
 
 draw = None
+
+@click.group()
+def cli():
+    pass
 
 def add_text(img, text):
     pass
@@ -49,7 +54,7 @@ def add_url_to_img(url, screenshot):
     img.save(screenshot)
 
 
-async def screenshotr(url, output, fullPage=True):
+async def screenshotr(url, output, fullPage):
     browser = None
     page = None
     if browser is None:
@@ -89,11 +94,15 @@ async def screenshotr(url, output, fullPage=True):
     }''')
     print(dimensions)
 
+    fp = fullPage in ['t', 'true', 'T', 'True', True]
     opts = {
         'path': screenshot_path,
         'type': 'png',
-        'fullPage': fullPage
+        'fullPage': fp
     }
+    click.echo(opts)
+    # TO DO: full page is taking a screenshot that is much bigger than actual full page height
+
     # if not fullPage:
     #     opts['clip'] = {
     #         'x': 0,
@@ -108,14 +117,32 @@ async def screenshotr(url, output, fullPage=True):
     add_url_to_img(url, screenshot_path)
 
 
+@cli.command()
+@click.option('--url')
+@click.option('--vwidth', default=1200)
+@click.option('--vheight', default=1600)
+@click.option('--output', default='screenshot.png')
+@click.option('--fullpage', default=False)
+def screenshot(url, vwidth, vheight, output, fullpage):
+    click.echo("Capturing screenshot…")
+    if url is None:
+        click.echo("Aborting - No url provided")
+        return False
+    asyncio.get_event_loop().run_until_complete(screenshotr(url=url, output=output, fullPage=fullpage))
+    click.echo("Done")
+
+
+# if __name__ == "__main__":
+#     args_provided = sys.argv[1:]
+#     print(args_provided)
+#     if len(args_provided) >= 2:
+#         fullPage = True
+#         if len(args_provided) > 2:
+#             if args_provided[2] and args_provided[2] in ['F', 'f', 'False', 'false']:
+#                 fullPage = False
+#         asyncio.get_event_loop().run_until_complete(screenshotr(url=args_provided[0], output=args_provided[1], fullPage=fullPage))
+#     else:
+#         print("No URL provided")
+
 if __name__ == "__main__":
-    args_provided = sys.argv[1:]
-    print(args_provided)
-    if len(args_provided) >= 2:
-        fullPage = True
-        if len(args_provided) > 2:
-            if args_provided[2] and args_provided[2] in ['F', 'f', 'False', 'false']:
-                fullPage = False
-        asyncio.get_event_loop().run_until_complete(screenshotr(url=args_provided[0], output=args_provided[1], fullPage=fullPage))
-    else:
-        print("No URL provided")
+    cli()
