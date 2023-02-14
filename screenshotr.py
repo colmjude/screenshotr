@@ -54,7 +54,7 @@ def add_url_to_img(url, screenshot):
     img.save(screenshot)
 
 
-async def screenshotr(url, output, fullPage):
+async def screenshotr(url, output, fullPage, width, height):
     browser = None
     page = None
     if browser is None:
@@ -71,7 +71,7 @@ async def screenshotr(url, output, fullPage):
 
     # default setting
     # sets the page size for non fullpage screenshots
-    await page.setViewport({"width":1200,"height":1600,"deviceScaleFactor":2.0})
+    await page.setViewport({"width": width, "height": height, "deviceScaleFactor": 2.0})
 
     vp = page.viewport
     print(vp)
@@ -128,7 +128,7 @@ def screenshot(url, vwidth, vheight, output, fullpage):
     if url is None:
         click.echo("Aborting - No url provided")
         return False
-    asyncio.get_event_loop().run_until_complete(screenshotr(url=url, output=output, fullPage=fullpage))
+    asyncio.get_event_loop().run_until_complete(screenshotr(url=url, output=output, fullPage=fullpage, width=vwidth, height=vheight))
     click.echo("Done")
 
 
