@@ -1,6 +1,9 @@
 appdirs
 asyncio
+black
 click
+flake8
+isort
 Pillow
 pyee
 pyppeteer
