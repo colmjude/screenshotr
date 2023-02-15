@@ -60,7 +60,7 @@ def add_url_to_img(url, screenshot):
     img.save(screenshot)
 
 
-async def screenshotr(url, output, fullPage, width, height):
+async def screenshotr(url, output, fullPage, width, height, saveurl):
     browser = None
     page = None
     if browser is None:
@@ -94,16 +94,30 @@ async def screenshotr(url, output, fullPage, width, height):
             width: document.documentElement.clientWidth,
             height: document.documentElement.clientHeight,
             deviceScaleFactor: window.devicePixelRatio,
-            userAgent: window.navigator.userAgent
+            userAgent: window.navigator.userAgent,
+            fullpageHeight: document.documentElement.offsetHeight
         }
-    }"""
+        }"""
     )
     print(dimensions)
+    print(dimensions["fullpageHeight"])
 
     fp = fullPage in ["t", "true", "T", "True", True]
-    opts = {"path": screenshot_path, "type": "png", "fullPage": fp}
+
+    opts = {"path": screenshot_path, "type": "png"}
     click.echo(opts)
-    # TO DO: full page is taking a screenshot that is much bigger than actual full page height
+    if fp:
+        # need to calculate and use the max height
+        # because fullpage option seems to make it too long (xN height)
+
+        # resize viewport to be max height
+        await page.setViewport(
+            {
+                "width": width,
+                "height": dimensions["fullpageHeight"],
+                "deviceScaleFactor": 2.0,
+            }
+        )
 
     # if not fullPage:
     #     opts['clip'] = {
@@ -116,7 +130,9 @@ async def screenshotr(url, output, fullPage, width, height):
     await page.screenshot(opts)
 
     await browser.close()
-    add_url_to_img(url, screenshot_path)
+
+    if saveurl:
+        add_url_to_img(url, screenshot_path)
 
 
 @cli.command()
@@ -125,14 +141,20 @@ async def screenshotr(url, output, fullPage, width, height):
 @click.option("--vheight", default=1600)
 @click.option("--output", default="screenshot.png")
 @click.option("--fullpage", default=False)
-def screenshot(url, vwidth, vheight, output, fullpage):
+@click.option("--saveurl", default=True)
+def screenshot(url, vwidth, vheight, output, fullpage, saveurl):
     click.echo("Capturing screenshot…")
     if url is None:
         click.echo("Aborting - No url provided")
         return False
     asyncio.get_event_loop().run_until_complete(
         screenshotr(
-            url=url, output=output, fullPage=fullpage, width=vwidth, height=vheight
+            url=url,
+            output=output,
+            fullPage=fullpage,
+            width=vwidth,
+            height=vheight,
+            saveurl=saveurl,
         )
     )
     click.echo("Done")
