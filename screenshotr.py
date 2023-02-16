@@ -83,9 +83,9 @@ async def screenshotr(url, output, fullPage, width, height, saveurl):
     print(pyppeteer.__chromium_revision__)
     await page.emulateMedia("screen")
 
-    await page.goto(url)
+    await page.goto(url, {"waitUntil": "networkidle0"})
 
-    await page.waitForSelector("img")
+    # await page.waitForSelector("img") - might fail if no img on page
     await page.waitFor(1000)
 
     dimensions = await page.evaluate(
