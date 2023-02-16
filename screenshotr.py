@@ -100,7 +100,17 @@ async def screenshotr(url, output, fullPage, width, height, saveurl):
         }"""
     )
     print(dimensions)
-    print(dimensions["fullpageHeight"])
+
+    # print out background colours
+    colours = await page.evaluate(
+        """() => {
+            return {
+                body: window.getComputedStyle( document.querySelector('body') ,null).getPropertyValue('background-color'),
+                html: window.getComputedStyle( document.documentElement ,null).getPropertyValue('background-color')
+            }
+        }"""
+    )
+    print(colours)
 
     fp = fullPage in ["t", "true", "T", "True", True]
 
