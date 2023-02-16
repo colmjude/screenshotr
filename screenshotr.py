@@ -151,7 +151,7 @@ async def screenshotr(url, output, fullPage, width, height, saveurl):
 @click.option("--vheight", default=1600)
 @click.option("--output", default="screenshot.png")
 @click.option("--fullpage", default=False)
-@click.option("--saveurl", default=True)
+@click.option("--saveurl", default=False)
 def screenshot(url, vwidth, vheight, output, fullpage, saveurl):
     click.echo("Capturing screenshot…")
     if url is None:
